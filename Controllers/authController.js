@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res,next) => {
   try {
     const { email, password } = req.body;
 
@@ -40,7 +40,11 @@ const loginUser = async (req, res) => {
    
     
     const token=jwt.sign({id:user._id, isAdmin:user.isAdmin},process.env.JWT_SECRET,{expiresIn:"1h"});
-    res.status(200).json({ message: "Login successful",token });
+    res.status(200).json({ message: "Login successful",token,user: {
+    _id: user._id,
+    email: user.email,
+    isAdmin: user.isAdmin
+  } });
   } catch (err) {
    next(err);
   }

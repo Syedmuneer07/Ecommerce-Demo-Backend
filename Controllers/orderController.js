@@ -37,7 +37,7 @@ exports.getOrderById = async (req, res, next) => {
 
 exports.getAllOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ userId: req.user._id }).populate("products.productId");
+    const orders = await Order.find({ userId: req.user.id }).populate("products.productId");
     res.status(200).json({ message: "Orders fetched successfully", orders });
   } catch (err) {
     next(err);
@@ -53,6 +53,19 @@ exports.updateOrderStatus = async (req, res, next) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
 
     res.status(200).json({ message: "Order updated successfully", order });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getAllOrdersForAdmin  = async (req, res, next) => {
+  try {
+    if(!req.user.isAdmin){
+
+    return res.status(403).json({ message: "You are not authorized to get all orders, only admin can get all orders" });
+    }
+    const orders = await Order.find().populate("products.productId");
+    res.status(200).json({ message: "Orders fetched successfully", orders });
   } catch (err) {
     next(err);
   }
