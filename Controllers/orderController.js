@@ -60,12 +60,29 @@ exports.updateOrderStatus = async (req, res, next) => {
 
 exports.getAllOrdersForAdmin  = async (req, res, next) => {
   try {
+    
+    const page=req.query.page ? parseInt(req.query.page) :1;
+
+    const limit=req.query.limit ? parseInt(req.query.limit) : 5;
+
     if(!req.user.isAdmin){
 
     return res.status(403).json({ message: "You are not authorized to get all orders, only admin can get all orders" });
     }
-    const orders = await Order.find().populate("products.productId");
-    res.status(200).json({ message: "Orders fetched successfully", orders });
+    const skipValue = (page - 1) * limit;
+    const orders = await Order.find().populate("products.productId").skip(skipValue).limit(limit).sort({createdAt:-1}); // sort by createdAt in descending order
+    
+    // Get total count for pagination
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / limit);
+    
+    res.status(200).json({ 
+      message: "Orders fetched successfully", 
+      orders,
+      totalPages,
+      totalOrders,
+      currentPage: page
+    });
   } catch (err) {
     next(err);
   }
