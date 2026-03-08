@@ -92,7 +92,12 @@ const googleLogin = async (req, res) => {
     );
     res.status(200).json({
       message: "Google Login successful",
-      jwtToken
+      token: jwtToken,
+      user: {
+        _id: user._id,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
     });
   } catch (err) {
     next(err);
