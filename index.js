@@ -11,6 +11,7 @@ const orderRoutes=require('./routes/orderRoutes');
 
 const app=express();  
 app.use(express.json());
+const path = require('path');
 app.use(cors(
     {
         origin:['http://localhost:5173', 'https://ecommerce-demo-front-end.onrender.com'],//Frontend URL
